@@ -6,23 +6,23 @@ sealed class TaskCategory(var isSelected: Boolean = true) {
     abstract val color: Int
     abstract val name: CharSequence?
 
-    object Business : TaskCategory(){
+    object Alta : TaskCategory(){
         override val color: Int
             get() = R.color.todo_business_category
         override val name: CharSequence
-            get() = "Negocios"
+            get() = "Alta"
     }
-    object Personal : TaskCategory(){
+    object Media : TaskCategory(){
         override val color: Int
             get() = R.color.todo_personal_category
         override val name: CharSequence
-            get() = "Personal"
+            get() = "Media"
     }
-    object Other : TaskCategory(){
+    object Baja : TaskCategory(){
         override val color: Int
             get() = R.color.todo_other_category
         override val name: CharSequence
-            get() = "Otros"
+            get() = "Baja"
 
     }
 }

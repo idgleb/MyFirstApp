@@ -1,18 +1,12 @@
 package com.ursolgleb.myfirstapp.todoapp
 
 import android.app.Dialog
-import android.content.Context
-import android.graphics.Rect
 import android.os.Bundle
-import android.os.SystemClock
 import android.util.Log
 import android.view.Gravity
-import android.view.MotionEvent
 import android.view.ViewTreeObserver
-import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -24,30 +18,28 @@ import com.ursolgleb.myfirstapp.databinding.DialogTaskBinding
 import com.ursolgleb.myfirstapp.todoapp.TaskCategory.*
 
 class TodoActivity : AppCompatActivity() {
-    private lateinit var todoBinding: ActivityTodoBinding
-
-    private val categories = listOf(
-        Business,
-        Personal,
-        Other
-    )
+    private lateinit var todoBind: ActivityTodoBinding
+    private lateinit var dialogBind: DialogTaskBinding
+    private lateinit var tasksAdapter: TasksAdapter
     private lateinit var categoriesAdapter: CategoriesAdapter
 
-    private val tasksList = mutableListOf(
-        Task("PruebaBusiness", Business),
-        Task("PruebaPersonal", Personal),
-        Task("PruebaOther", Other, true)
+    private val categories = listOf(
+        Alta,
+        Media,
+        Baja
     )
 
-    private lateinit var tasksAdapter: TasksAdapter
-    private lateinit var bindindDialog: DialogTaskBinding
-
+    private val tasksList = mutableListOf(
+        Task("Comprar leche", Alta),
+        Task("Reparar bicicleta", Media),
+        Task("Llamar al dentista", Baja, true)
+    )
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        todoBinding = ActivityTodoBinding.inflate(layoutInflater)
-        setContentView(todoBinding.root)
+        todoBind = ActivityTodoBinding.inflate(layoutInflater)
+        setContentView(todoBind.root)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
@@ -58,17 +50,16 @@ class TodoActivity : AppCompatActivity() {
     }
 
     private fun initListeners() {
-        todoBinding.fabAddTask.setOnClickListener {
+        todoBind.fabAddTask.setOnClickListener {
             showDialog()
-            showKeyBoard(bindindDialog)
+            showKeyBoard(dialogBind)
         }
-
     }
 
     private fun showDialog() {
         var dialog = Dialog(this, R.style.DialogStyle)
         dialog.setContentView(R.layout.dialog_task)
-        bindindDialog = DialogTaskBinding.bind(dialog.findViewById(R.id.cardTask))
+        dialogBind = DialogTaskBinding.bind(dialog.findViewById(R.id.cardTask))
 
         dialog.window?.apply {
             setGravity(Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL)
@@ -76,52 +67,51 @@ class TodoActivity : AppCompatActivity() {
 
         dialog.show()
 
-        ViewCompat.setOnApplyWindowInsetsListener(todoBinding.root) { _, insets ->
+        val globalLayoutListener = ViewTreeObserver.OnGlobalLayoutListener {
+            showKeyBoard(dialogBind)
+        }
+        dialog.window?.decorView?.viewTreeObserver?.addOnGlobalLayoutListener(globalLayoutListener)
+
+        ViewCompat.setOnApplyWindowInsetsListener(todoBind.root) { _, insets ->
             val isKeyboardVisible = insets.isVisible(WindowInsetsCompat.Type.ime())
             if (isKeyboardVisible) {
                 Log.d("Keyboard2", "Teclado abierto")
+                dialog.window?.decorView?.viewTreeObserver?.removeOnGlobalLayoutListener(globalLayoutListener)
             } else {
                 Log.d("Keyboard2", "Teclado cerrado")
-                dialog.hide()
             }
             insets
         }
 
-
-        bindindDialog.etTask.setOnEditorActionListener { _, actionId, _ ->
+        dialogBind.etTask.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 Log.d("Keyboard2", "Teclado cerrado por el botón Done")
-                bindindDialog.btnTask.performClick()
+                dialogBind.btnTask.performClick()
                 true // Indicar que manejaste el evento
             } else {
                 false // Permitir el comportamiento predeterminado
             }
         }
 
-
-        bindindDialog.btnTask.setOnClickListener {
-            val currentTask = bindindDialog.etTask.text.toString()
+        dialogBind.btnTask.setOnClickListener {
+            val currentTask = dialogBind.etTask.text.toString()
             if (currentTask.isNotEmpty()) {
-                val selectedButtonId = bindindDialog.rgCategories.checkedRadioButtonId
-
+                val selectedButtonId = dialogBind.rgCategories.checkedRadioButtonId
                 val currentCategory: TaskCategory = when (selectedButtonId) {
-                    R.id.rbBusiness -> Business
-                    R.id.rbPersonal -> Personal
-                    R.id.rbOther -> Other
-                    else -> Business
-
+                    R.id.rbBusiness -> Alta
+                    R.id.rbPersonal -> Media
+                    R.id.rbOther -> Baja
+                    else -> Alta
                 }
                 tasksList.add(Task(currentTask, currentCategory))
                 updateTask()
-                todoBinding.rvTasks.smoothScrollToPosition(tasksList.size - 1)
+                todoBind.rvTasks.smoothScrollToPosition(tasksList.size - 1)
                 dialog.hide()
             } else {
-                bindindDialog.etTask.error = getString(R.string.todo_no_puede_estar_vacio)
-                showKeyBoard(bindindDialog)
-
+                dialogBind.etTask.error = getString(R.string.todo_no_puede_estar_vacio)
+                showKeyBoard(dialogBind)
             }
         }
-
 
     }
 
@@ -134,20 +124,17 @@ class TodoActivity : AppCompatActivity() {
 
 
     private fun initUI() {
-        categories.get(0).isSelected = false
-
         categoriesAdapter = CategoriesAdapter(categories, ::onItemCategorySelected)
-        todoBinding.rvCategories.adapter = categoriesAdapter
-        todoBinding.rvCategories.layoutManager =
+        todoBind.rvCategories.adapter = categoriesAdapter
+        todoBind.rvCategories.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
-
 
         var tasksFiltered = filtrarTasks()
 
         tasksAdapter = TasksAdapter(tasksFiltered.toMutableList(), ::onItemTaskSelected)
 
-        todoBinding.rvTasks.adapter = tasksAdapter
-        todoBinding.rvTasks.layoutManager =
+        todoBind.rvTasks.adapter = tasksAdapter
+        todoBind.rvTasks.layoutManager =
             LinearLayoutManager(this)
 
     }
@@ -155,13 +142,10 @@ class TodoActivity : AppCompatActivity() {
     private fun onItemCategorySelected(posicion: Int) {
         categories[posicion].isSelected = !categories[posicion].isSelected
         categoriesAdapter.notifyItemChanged(posicion)
-
         updateTask()
-
     }
 
     private fun onItemTaskSelected(idTask: Int) {
-        Toast.makeText(this, "idTask: $idTask", Toast.LENGTH_SHORT).show()
         val posicion = tasksList.indexOfFirst { it.idTask == idTask }
         tasksList[posicion].isSelected = !tasksList[posicion].isSelected
         updateTask()
