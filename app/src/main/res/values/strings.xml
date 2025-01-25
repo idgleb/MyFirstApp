@@ -1,0 +1,50 @@
+<resources>
+
+<!--IMCCalculator-->
+    <string name="app_name">MyFirstApp</string>
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="escribe_tu_usuario">Escribe tu usuario</string>
+    <string name="escribe_la_contrasena">Escribe la contrasena</string>
+    <string name="male">Hombre</string>
+    <string name="female">Mujer</string>
+    <string name="height">Altura</string>
+    <string name="sm">cm</string>
+    <string name="height_display">%1$s %2$s</string>
+    <string name="weight">Peso</string>
+    <string name="age">Edad</string>
+    <string name="calculate">Calcular</string>
+    <string name="your_result">Tu Resultado</string>
+    <string name="re_calculation">Re-calcular</string>
+
+    <string name="underweight">Peso insuficiente</string>
+    <string name="underweight_advise">Aumenta calorías con alimentos nutritivos y entrena fuerza.</string>
+
+    <string name="normal_weight">Peso normal</string>
+    <string name="normal_weight_advise">Mantén una dieta equilibrada y haz ejercicio regular.</string>
+
+    <string name="overweight">Sobrepeso</string>
+    <string name="overweight_advise">Reduce grasas y azúcares, y aumenta la actividad física.</string>
+
+    <string name="grade_1_obesity">Obesidad grado I</string>
+    <string name="grade_1_obesity_advise">Plan de dieta controlada y ejercicio moderado.</string>
+
+    <string name="grade_2_obesity">Obesidad grado II</string>
+    <string name="grade_2_obesity_advise">Consulta a un especialista y sigue un plan integral.</string>
+
+    <string name="grade_3_obesity_extrema">Obesidad III patológica extrema</string>
+    <string name="grade_3_obesity_extrema_advise">Busca ayuda médica y evalúa opciones de tratamiento.</string>
+
+<!--TodoApp-->
+    <string name="todo_title">Bienvenido, usuario</string>
+    <string name="todo_categories">Categorias:</string>
+    <string name="todo_todo_tasks">Tareas:</string>
+    <string name="todo_dialod_add_task">Escribe una tarea</string>
+    <string name="todo_business">Business2</string>
+    <string name="todo_personal">Personal2</string>
+    <string name="todo_otra">Otros</string>
+    <string name="todo_btn_dialog_tarea">Tarea</string>
+    <string name="todo_no_puede_estar_vacio">No puede estar vacio</string>
+
+</resources>
